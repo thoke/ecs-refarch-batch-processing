@@ -2,7 +2,7 @@
 
 This reference architecture shows how to handle Batch Processing using [Amazon ECS](http://aws.amazon.com/ecs). You may also want to consider [AWS Batch](https://aws.amazon.com/batch), a service that dynamically provisions the optimal quantity and type of compute resources based on the volume and specific resource requirements of the batch jobs submitted. The Batch Processing reference architecture diagram below illustrates the architecture.
 
-![](images/ECSBatchRefArch.png)
+[<img src="images/ECSBatchRefArch.png" alt="" width=1024/>](images/ECSBatchRefArch.png)
 
 The [AWS CloudFormation](https://aws.amazon.com/cloudformation) template included in this example creates an input and an output [Amazon S3](https://aws.amazon.com/s3) bucket, an [Amazon SQS](https://aws.amazon.com/sqs/) queue, an [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) alarm, an [ECS](https://aws.amazon.com/ecs/) cluster, and an ECS task definition. Objects uploaded to the input S3 bucket trigger an event that sends object details to the SQS queue. The ECS task deploys a Docker container that reads from that queue, parses the message containing the object name and then downloads the object. Once transformed it will upload the objects to the S3 output bucket.
 This example uses images, in jpg format, to showcase the batch processing architecture. Upload images with a .jpg suffix to the input S3 bucket to trigger the event. NOTE: Use the lowercase .jpg suffix.
@@ -14,7 +14,7 @@ The CloudFormation template creates an [IAM role](http://docs.aws.amazon.com/Ama
 ## Running the example
 Follow these steps to run the template.
 
-###Step 1: Clone the Github repository and build the Docker image
+### Step 1: Clone the Github repository and build the Docker image
 To run the entire example, first clone the source repository, using the following command:
 
   `$ git clone https://github.com/awslabs/ecs-refarch-batch-processing.git`
@@ -35,7 +35,7 @@ Push the image:
 
   `$ docker push`
 
-###Step 2: Create a CloudFormation stack
+### Step 2: Create a CloudFormation stack
 Choose **Launch Stack** to launch the template in the us-east-1 region in your account:
 
 [![Launch ECS batch processing with CloudFormation](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/images/cloudformation-launch-stack-button.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=ecs-batch-processing&templateURL=https://s3.amazonaws.com/ecs-reference-architectures/batch-processing/ecs-refarch-batch.template)
@@ -53,7 +53,7 @@ The CloudFormation template requires the following parameters:
 
 
 
-###Step 3: Create the S3 event trigger for the SQS queue
+### Step 3: Create the S3 event trigger for the SQS queue
 Go to the S3 Console in your AWS Account and select the S3 Input Bucket that the CloudFormation template created and go to Properties -> Events.
 
 Configure an event notification to the SQS queue called SQSBatchQueue for the ObjectCreated (All) event and in the Suffix field enter "jpg".
@@ -61,15 +61,15 @@ Configure an event notification to the SQS queue called SQSBatchQueue for the Ob
 You can learn more about configuring S3 event notifications [here](http://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html).
 
 
-###Step 4: Create the ECS Service
+### Step 4: Create the ECS Service
 Go to the ECS Console in your AWS Account and [create an ECS Service](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/create-service.html) choosing the ECS Cluster and Task definition created by the CloudFormation template. Give the service a name and set the number of desired tasks to deploy as part of the service. For this example, you can configure the basic service parameters.
 
 
-###Step 5: Update the ECS Service to configure Auto Scaling
+### Step 5: Update the ECS Service to configure Auto Scaling
 In this step you will [configure auto scaling](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/create-service.html#service-configure-auto-scaling) for the service you created in step 4.
 [CloudWatch](https://aws.amazon.com/cloudwatch/) allows you to trigger alarms when a threshold is met for a metric. The CloudFormation template creates a CloudWatch Alarm for the SQS queue on the ApproximateNumberOfMessagesVisible metric so that when the number of messages exceeds a specified limit over a specified time period, the ECS Service will launch an additional task on the ECS Cluster. Use this existing alarm when configuring the scaling for the service.
 
-Select the service created in Step 4 and click Update, then "Configure Service Auto Scaling". Choose "Configure Service Auto Scaling to adjust your service’s desired count" and fill in the minimum, desired and maximum number of tasks. Click on "Add a scaling policy" and use the existing alarm (created by the CloudFormation template).
+Select the service created in Step 4 and click Update, then "Configure Service Auto Scaling". Choose "Configure Service Auto Scaling to adjust your service's desired count" and fill in the minimum, desired and maximum number of tasks. Click on "Add a scaling policy" and use the existing alarm (created by the CloudFormation template).
 
 The CloudWatch alarm created by the template should now look similar to this.
 
@@ -121,5 +121,5 @@ The following sections explain all of the resources created by the CloudFormatio
 
 - **ECSTaskRole** - An IAM role assumed by the ECS task. This role gives the Docker container the right to upload and fetch objects to and from S3 as well as read and delete messages from the SQS queue. By using an ECS task role, the underlying EC2 instances do not need to be given access rights to the resources that the container uses. For more information about IAM roles for tasks, see [IAM Roles for Tasks](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html).
 
-##License
+## License
 This reference architecture sample is licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0).
